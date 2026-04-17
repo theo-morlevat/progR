@@ -137,6 +137,24 @@ toggle_segment <- function(state, seg) {
 
 
 # -------------------------------------------------------------
+# Description lisible du dernier segment cliqué (pour l'UI)
+# -------------------------------------------------------------
+#' @param seg    list(type, i, j) — segment ciblé
+#' @param state  list(h, v) — état joueur après toggle
+#' @return       chaîne de caractères descriptive
+#' @export
+describe_segment <- function(seg, state) {
+  if (seg$type == "h") {
+    val <- state$h[seg$i, seg$j]
+    sprintf("Horizontal  ligne=%d  col=%d  etat=%d", seg$i, seg$j, val)
+  } else {
+    val <- state$v[seg$i, seg$j]
+    sprintf("Vertical    ligne=%d  col=%d  etat=%d", seg$i, seg$j, val)
+  }
+}
+
+
+# -------------------------------------------------------------
 # Vérification de la solution
 # -------------------------------------------------------------
 #' Compare l'état joueur à la solution du puzzle
