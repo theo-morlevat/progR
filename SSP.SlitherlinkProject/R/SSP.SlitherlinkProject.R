@@ -20,15 +20,16 @@
 # -------------------------------------------------------------
 # Dessin de la grille
 # -------------------------------------------------------------
-#' @param h_mat  matrice (n+1) x n  — segments horizontaux (0 = absent, 1 = tracé)
-#' @param v_mat  matrice n x (n+1)  — segments verticaux   (0 = absent, 1 = tracé)
-#' @param clues  matrice n x n      — indices par cellule (NA = caché), NULL par défaut
-#' @return       aucune valeur (effet de bord : dessin)
+#' @param h_player  matrice (n+1) x n  — segments horizontaux tracés par le joueur
+#' @param v_player  matrice n x (n+1)  — segments verticaux   tracés par le joueur
+#' @param clues     matrice n x n      — indices par cellule (NA = caché), NULL par défaut
+#' @param col_player couleur des segments tracés par le joueur (défaut : "steelblue")
+#' @return          aucune valeur (effet de bord : dessin)
 #' @export
-draw_grid <- function(h_mat, v_mat, clues = NULL) {
+draw_grid <- function(h_player, v_player, clues = NULL, col_player = "steelblue") {
 
-  n_row <- nrow(v_mat)    # nombre de lignes   de cellules (= n)
-  n_col <- ncol(h_mat)    # nombre de colonnes de cellules (= n)
+  n_row <- nrow(v_player)    # nombre de lignes   de cellules (= n)
+  n_col <- ncol(h_player)    # nombre de colonnes de cellules (= n)
 
   # Initialisation d'un plot vide aux dimensions de la grille
   plot(0, 0, type = "n",
@@ -41,32 +42,32 @@ draw_grid <- function(h_mat, v_mat, clues = NULL) {
     for (j in 0:n_row)
       points(i, j, pch = 16, cex = 0.5)    # pch=16 : disque plein, cex=0.5 : petit
 
-  # --- Segments horizontaux ---
+  # --- Segments horizontaux du joueur ---
   # H[i, j] relie le noeud (j-1, n_row-(i-1)) au noeud (j, n_row-(i-1))
-  # i indexe la ligne de la matrice h_mat (de haut en bas)
-  # j indexe la colonne de la matrice h_mat (de gauche à droite)
-  for (i in 1:nrow(h_mat))
-    for (j in 1:ncol(h_mat))
-      if (h_mat[i, j] == 1)                # ne dessine que les segments actifs
-        segments(j - 1, n_row - (i - 1),   # point de départ (x1, y1)
-                 j,     n_row - (i - 1),   # point d'arrivée (x2, y2)
-                 lwd = 2)                  # épaisseur du trait
+  # i indexe la ligne de la matrice h_player (de haut en bas)
+  # j indexe la colonne de la matrice h_player (de gauche à droite)
+  for (i in 1:nrow(h_player))
+    for (j in 1:ncol(h_player))
+      if (h_player[i, j] == 1)                  # ne dessine que les segments actifs
+        segments(j - 1, n_row - (i - 1),        # point de départ (x1, y1)
+                 j,     n_row - (i - 1),        # point d'arrivée (x2, y2)
+                 lwd = 2, col = col_player)      # couleur et épaisseur joueur
 
-  # --- Segments verticaux ---
+  # --- Segments verticaux du joueur ---
   # V[i, j] relie le noeud (j-1, n_row-i) au noeud (j-1, n_row-(i-1))
-  for (i in 1:nrow(v_mat))
-    for (j in 1:ncol(v_mat))
-      if (v_mat[i, j] == 1)                # ne dessine que les segments actifs
-        segments(j - 1, n_row - i,         # point de départ (x1, y1)
-                 j - 1, n_row - (i - 1),   # point d'arrivée (x2, y2)
-                 lwd = 2)                  # épaisseur du trait
+  for (i in 1:nrow(v_player))
+    for (j in 1:ncol(v_player))
+      if (v_player[i, j] == 1)                  # ne dessine que les segments actifs
+        segments(j - 1, n_row - i,              # point de départ (x1, y1)
+                 j - 1, n_row - (i - 1),        # point d'arrivée (x2, y2)
+                 lwd = 2, col = col_player)      # couleur et épaisseur joueur
 
   # --- Indices dans les cellules ---
   # Le centre de la cellule (i, j) est en (j - 0.5, n_row - i + 0.5)
   if (!is.null(clues))
     for (i in 1:nrow(clues))
       for (j in 1:ncol(clues))
-        if (!is.na(clues[i, j]))           # n'affiche que les indices non masqués
+        if (!is.na(clues[i, j]))                # n'affiche que les indices non masqués
           text(j - 0.5, n_row - i + 0.5, clues[i, j], cex = 1.2)
 }
 

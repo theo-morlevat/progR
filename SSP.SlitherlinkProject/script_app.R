@@ -149,11 +149,15 @@ server <- function(input, output, session) {
     # plutôt que de laisser le plot vide
     if (is.null(state)) state <- init_player_state(as.numeric(input$grid_size))
 
-    # Appel à draw_grid() avec les segments du joueur et les indices du puzzle
+    # Appel à draw_grid() :
+    #   - h_player / v_player : segments tracés par le joueur (dessinés en bleu)
+    #   - clues               : indices visibles selon la difficulté choisie
+    #   - col_player          : couleur des segments joueur (steelblue par défaut)
     draw_grid(
-      h_mat = state$h,            # segments horizontaux tracés par le joueur
-      v_mat = state$v,            # segments verticaux   tracés par le joueur
-      clues = puzzle_data()$clues # indices visibles selon la difficulté choisie
+      h_player   = state$h,              # segments horizontaux tracés par le joueur
+      v_player   = state$v,              # segments verticaux   tracés par le joueur
+      clues      = puzzle_data()$clues,  # indices visibles selon la difficulté choisie
+      col_player = "steelblue"           # couleur distinctive pour les segments joueur
     )
   })
 }
