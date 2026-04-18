@@ -229,9 +229,9 @@ mask_clues <- function(clues, prob = 0.5) {
 #'             $h, $v   : matrices de la solution
 #'             $clues   : indices partiels visibles pour le joueur
 #' @export
-generate_puzzle <- function(n) {
+generate_puzzle <- function(n, prob) {
   sol   <- generate_border_loop(n)
   clues <- compute_clues(sol$h, sol$v)
-  clues <- mask_clues(clues, prob = 0.5)
+  clues <- mask_clues(clues, prob)
   list(h = sol$h, v = sol$v, clues = clues)
 }

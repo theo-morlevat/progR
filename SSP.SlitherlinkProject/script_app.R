@@ -13,6 +13,15 @@ ui <- fluidPage(
                      "10 x 10" = 10),
         selected = 5
       ),
+        selectInput(
+          inputId  = "difficulty",
+          label    = "difficulté :",
+          choices  = c("facile"   = 0.25,
+                       "moyen"   = 0.5,
+                       "difficile" = 0.7),
+          selected = "facile"
+        ),
+
       actionButton("start_game",    "Commencer une partie"),
       br(), br(),
       actionButton("validate_grid", "Valider la grille"),
@@ -42,7 +51,8 @@ server <- function(input, output, session) {
   # --- Nouvelle partie ---
   observeEvent(input$start_game, {
     n <- as.numeric(input$grid_size)
-    puzzle_data(generate_puzzle(n))        # génération du puzzle (functions)
+    difficulty <- input$difficulty
+    puzzle_data(generate_puzzle(n,difficulty))        # génération du puzzle (functions)
     player_state(init_player_state(n))     # initialisation de l'état joueur (functions)
     result_text("Nouvelle partie lancée !")
     click_info("Aucun")
