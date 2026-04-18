@@ -56,6 +56,13 @@ ui <- fluidPage(
 
       br(), br(),                 # sauts de ligne pour l'espacement visuel
 
+      # --- Bouton : effacer tous les traits ---
+      # Réinitialise uniquement player_state à zéro sans toucher à puzzle_data
+      # Déclenche observeEvent(input$clear_grid) dans le server
+      actionButton("clear_grid", "Effacer les traits"),
+
+      br(), br(),                 # sauts de ligne pour l'espacement visuel
+
       # --- Zone de résultat ---
       h4("Résultat :"),           # sous-titre de section
       # textOutput() affiche la valeur de result_text() mise à jour par le server
@@ -106,6 +113,19 @@ server <- function(input, output, session) {
     puzzle_data(generate_puzzle(n, difficulty)) # génère le puzzle (solution + indices masqués)
     player_state(init_player_state(n))          # initialise la grille joueur à zéro
     result_text("Nouvelle partie lancée !")     # message d'information
+  })
+
+
+  # --- Effacement de tous les traits ---
+  # Réinitialise player_state à zéro sans regénérer le puzzle :
+  # les indices et la solution sont conservés, seuls les traits du joueur sont effacés
+  observeEvent(input$clear_grid, {
+
+    req(puzzle_data())    # ne rien faire si aucune partie n'est en cours
+
+    n <- as.numeric(input$grid_size)
+    player_state(init_player_state(n))   # remet toutes les matrices joueur à zéro
+    result_text("")                      # efface le message de résultat éventuel
   })
 
 
