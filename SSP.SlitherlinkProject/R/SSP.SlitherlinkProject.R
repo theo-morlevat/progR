@@ -667,13 +667,48 @@ mask_clues <- function(clues, prob) {
 
 
 # -------------------------------------------------------------
+# Calcul du seuil de longueur minimale de la boucle
+# -------------------------------------------------------------
+#' Détermine la longueur minimale requise pour la boucle générée,
+#' en fonction de la taille de la grille.
+#'
+#' Objectif : forcer des boucles suffisamment grandes pour que le puzzle
+#' soit intéressant. Le périmètre complet d'une grille n x n est 4*n segments.
+#' On vise environ 60% de ce périmètre comme longueur minimale, avec un
+#' plancher à 12 pour les petites grilles.
+#'
+#'   n =  5  ->  min_length = max(12, round(0.6 * 20)) = max(12, 12) = 12  (trop court)
+#'            => on utilise directement les valeurs calibrées ci-dessous
+#'
+#' Valeurs calibrées :
+#'   n =  5  ->  20  (périmètre = 20, on exige la totalité)
+#'   n =  7  ->  30  (périmètre = 28, on exige légèrement plus que le périmètre)
+#'   n = 10  ->  50  (périmètre = 40, on exige 125% du périmètre)
+#'
+#' Pour une valeur de n non listée, on utilise la formule : round(n * 4 * 0.8)
+#'
+#' @param n  taille de la grille
+#' @return   entier : longueur minimale de la boucle
+#' @export
+compute_min_length <- function(n) {
+  # Valeurs calibrées pour les trois tailles proposées dans l'UI
+  switch(as.character(n),
+         "5"  = 20L,    # 100% du périmètre : force une boucle couvrant toute la grille
+         "7"  = 30L,    # ~107% du périmètre : boucle complexe et sinueuse
+         "10" = 50L,    # 125% du périmètre : boucle longue et riche en indices
+         round(n * 4L * 0.8)   # formule générique pour toute autre taille (80% du périmètre)
+  )
+}
+
+
+# -------------------------------------------------------------
 # Pipeline complet : génère un puzzle prêt à jouer
 # -------------------------------------------------------------
 #' Enchaîne generate_random_loop -> compute_clues -> mask_clues
 #' en traduisant d'abord la difficulté en probabilité.
 #'
-#' generate_border_loop() est remplacé par generate_random_loop()
-#' pour produire un puzzle différent à chaque partie.
+#' Le seuil de longueur minimale est calculé par compute_min_length(n)
+#' pour garantir des boucles suffisamment grandes selon la taille de grille.
 #'
 #' @param n           taille de la grille (n x n cellules)
 #' @param difficulty  "facile", "moyen" ou "difficile" (défaut "moyen")
@@ -682,9 +717,10 @@ mask_clues <- function(clues, prob) {
 #'                      $clues   : indices partiels visibles pour le joueur
 #' @export
 generate_puzzle <- function(n, difficulty = "moyen") {
-  prob  <- difficulty_to_prob(difficulty)     # conversion difficulté -> probabilité
-  sol   <- generate_random_loop(n)            # génération aléatoire de la boucle solution
-  clues <- compute_clues(sol$h, sol$v)        # calcul de tous les indices
-  clues <- mask_clues(clues, prob)            # masquage selon la difficulté
+  prob       <- difficulty_to_prob(difficulty)          # conversion difficulté -> probabilité
+  min_length <- compute_min_length(n)                   # seuil calibré selon la taille
+  sol        <- generate_random_loop(n, min_length)     # génération avec le bon seuil
+  clues      <- compute_clues(sol$h, sol$v)             # calcul de tous les indices
+  clues      <- mask_clues(clues, prob)                 # masquage selon la difficulté
   list(h = sol$h, v = sol$v, clues = clues)
 }
