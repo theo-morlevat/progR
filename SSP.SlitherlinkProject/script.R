@@ -1,1 +1,5 @@
-usethis::use_r("SSP.SlitherlinkProject.R")
+install.packages("shiny")
+
+pkgload::load_all()
+
+shiny::runApp("script_app.R")
