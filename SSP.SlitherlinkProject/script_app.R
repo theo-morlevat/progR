@@ -2,6 +2,7 @@ library(shiny)   # charge le package Shiny pour construire l'application web
 
 # =============================================================
 # Une application Shiny se compose de trois parties :
+#le script suivant a été en partie créé avec l'aide d'un llm.
 #   1. ui     : décrit l'interface affichée dans le navigateur
 #   2. server : fait le lien entre l'interface et la logique métier
 #   3. shinyApp() : assemble et lance l'application

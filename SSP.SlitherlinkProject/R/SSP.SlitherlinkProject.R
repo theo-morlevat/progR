@@ -1,5 +1,6 @@
 # =============================================================
 # slitherlink_functions.R
+#le script suivant a été en partie créé avec l'aide d'un llm.
 # Contient toute la logique métier du jeu Slitherlink :
 #   - Dessin de la grille         draw_grid()
 #   - Initialisation joueur       init_player_state()
